@@ -1,0 +1,5 @@
+.mdb
+Jenkinsfile
+node_modules
+db.js
+.env

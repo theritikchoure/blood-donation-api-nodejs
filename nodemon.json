@@ -1,0 +1,6 @@
+{
+    "env": {
+        "JWT_KEY": "secret",
+        "SESSION_SECRET": "thisismysecrctekeyfhrgfgrfrty84fwir767"
+    }
+}
