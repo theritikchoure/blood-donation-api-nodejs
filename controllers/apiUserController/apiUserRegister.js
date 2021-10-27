@@ -22,18 +22,18 @@ module.exports = async (req, res, next) => {
                     }
                     else
                     {
-                        const apiUser = new apiUser({
+                        const apiuser = new apiUser({
                             name: req.body.name,
                             email: req.body.email,
                             password: hash,
                         });
-                        apiUser
+                        apiuser
                             .save()
                             .then(result => {
                                 console.log(result);
                                 res.status(201).json({
                                     message: "API USER has registered successfully",
-                                    apiUser: result
+                                    apiuser: result
                                 })
                             })
                             .catch(err => {

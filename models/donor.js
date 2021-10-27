@@ -31,7 +31,11 @@ const donorSchema = new mongoose.Schema({
     city: {
         type: String,
         required: true
-    }    
+    },
+    donated: {
+        type: Date,
+        default: null
+    }
 })
 
 module.exports = mongoose.model('Donor', donorSchema);

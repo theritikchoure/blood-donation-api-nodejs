@@ -21,6 +21,7 @@ module.exports = async (req, res, next) => {
                     if(result)
                     {
                         req.session.loggedin = true;
+                        req.session.donorid = user._id;
                         console.log(req.session.id);
                         return res.status(201).json({
                             message: "Login Success",
