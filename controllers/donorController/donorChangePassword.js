@@ -1,12 +1,12 @@
 const Donor = require('../../models/donor');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const session = require("express-session");
-const MongoDBSession = require('connect-mongodb-session')(session);
+var cookieParser = require("cookie-parser");
+var session = require("express-session");
+
 
 module.exports = async (req, res, next) => {
-    await Donor.findOne({email: req.body.email})
+    try
+    {
+        await Donor.findById(req.session.donorid)
         .exec()
         .then(user => {
             if(user < 1)
@@ -17,14 +17,12 @@ module.exports = async (req, res, next) => {
             }
             else
             {
-                bcrypt.compare(req.body.password, user.password, (err, result) => {
+                bcrypt.compare(req.body.oldPassword, user.password, (err, result) => {
                     if(result)
                     {
-                        req.session.loggedindonor = true;
-                        req.session.donorid = user._id;
-                        console.log(req.session.id);
+                        const updatePassword = Donor.updateOne(req.session.donorid, { $set: {password: req.body.newPassword} }, {new: true});
                         return res.status(200).json({
-                            message: "Donor Login Successfully",
+                            message: "Password Updated Successfully",
                         })
                     }
                     else
@@ -36,4 +34,12 @@ module.exports = async (req, res, next) => {
                 })
             }
         })
+    }
+    catch(err)
+    {
+        res.status(500).json({
+            message: "Something went wrong",
+            error: err
+        })
+    }
 }

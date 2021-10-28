@@ -1,0 +1,33 @@
+// DONOR Module
+
+[✔] : Donor Registration
+[✔] : Donor Login
+[✔] : Donor Profile After Login
+[✔] : Donor Profile Update 
+[✔] : Donor Password Change from Profile
+[6] : Donor Blood Donated
+[7] : Donor Donated History
+[8] : Donor Forget Password (FIX Later)
+
+// Patients Module
+[✔] : Patients Registration
+[✔] : Patients Login for future
+[✔] : Patient Profile After Login
+[✔] : All Donor List && Based on City and BloodGroup
+[✔] : Donor's Profile after Patient Login
+[5] : Donor Confirm by Patien's Dashboard
+[6] : Comment on Donor's Profile
+
+// Admin Module
+[1] : Patients List 
+[2] : Donors List 
+[3] : Block Donor (if wrong feedback)
+
+// API User Module
+[✔] : API User Registration
+[✔] : API User Login
+[✔] : API User List
+[✔] : API User Delete
+
+
+

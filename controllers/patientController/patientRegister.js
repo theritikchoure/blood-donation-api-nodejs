@@ -1,8 +1,10 @@
-const Donor = require('../../models/donor');
+const Patient = require('../../models/patient');
 const bcrypt = require('bcrypt');
+const session = require("express-session");
+const MongoDBSession = require('connect-mongodb-session')(session);
 
 module.exports = async (req, res, next) => {
-    await Donor.find({email: req.body.email})
+    await Patient.find({email: req.body.email})
         .exec()
         .then(user => {
             if(user.length > 1)
@@ -22,7 +24,7 @@ module.exports = async (req, res, next) => {
                     }
                     else
                     {
-                        const donor = new Donor({
+                        const patient = new Patient({
                             name: req.body.name,
                             bloodgroup: req.body.bloodgroup,
                             email: req.body.email,
@@ -30,14 +32,18 @@ module.exports = async (req, res, next) => {
                             mobile: req.body.mobile,
                             age: req.body.age,
                             city: req.body.city,
+                            disease: req.body.disease,
+                            hospital: req.body.hospital,
                         });
-                        donor
+                        patient
                             .save()
                             .then(result => {
+                                req.session.loggedinpatient = true;
+                                req.session.patientid = result._id;
                                 console.log(result);
                                 res.status(201).json({
-                                    message: "Donor Registered Successfully",
-                                    donor: result
+                                    message: "Patient Registered Successfully",
+                                    patient: result
                                 })
                             })
                             .catch(err => {
