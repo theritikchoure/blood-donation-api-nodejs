@@ -2,7 +2,7 @@
 
 [✔] : Donor Registration
 [✔] : Donor Login
-[✔] : Donor Profile After Login
+[✔] : Donor Dashboard
 [✔] : Donor Profile Update 
 [✔] : Donor Password Change from Profile
 [✔] : Donor Blood Donated
@@ -12,7 +12,7 @@
 // Patients Module
 [✔] : Patients Registration
 [✔] : Patients Login for future
-[✔] : Patient Profile After Login
+[✔] : Patient Dashboard
 [✔] : All Donor List && Based on City and BloodGroup
 [✔] : Donor's Profile after Patient Login
 [✔] : Donor Confirm by Patient's Dashboard

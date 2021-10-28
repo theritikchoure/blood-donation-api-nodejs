@@ -22,7 +22,6 @@ const apiUserAuth = require('./../middleware/apiUserAuth'); // import api user j
   router.get('/profile', apiUserAuth, patientAuth, patientProfile);
   router.put('/profile/update', apiUserAuth, patientAuth, patientProfileUpdate);
   router.put('/profile/change-password', apiUserAuth, patientAuth, patientChangePassword);
-  router.put('/donated', apiUserAuth, patientAuth, patientDonated);
   router.post('/history', apiUserAuth, patientAuth, patientHistory);
   router.get('/search', apiUserAuth, patientSearch);
   router.delete('/delete/:id', apiUserAuth, patientDelete);
