@@ -40,6 +40,13 @@ const patientSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    donatedBy: [
+        {
+            default: null,
+            type: mongoose.Types.ObjectId,
+            ref: 'Donor'
+        }
+    ],
 })
 
 module.exports = mongoose.model('Patient', patientSchema);

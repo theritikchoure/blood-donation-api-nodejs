@@ -16,6 +16,7 @@ const apiUserAuth = require('./../middleware/apiUserAuth'); // import donor auth
   const donorLogin = require('./../controllers/donorController/donorLogin');
   const donorList = require('./../controllers/donorController/donorList');
   const confirmDonor = require('./../controllers/donorController/confirmDonor');
+  const donorHistory = require('./../controllers/donorController/donorHistory');
 // Import Different Donor Controllers (End) 
 
 // Donor Routes (End) 
@@ -26,6 +27,7 @@ const apiUserAuth = require('./../middleware/apiUserAuth'); // import donor auth
   router.put('/profile/update', apiUserAuth, donorAuth, donorProfileUpdate);
   router.put('/profile/change-password', apiUserAuth, donorAuth, donorChangePassword);
   router.put('/donated/:patientid', apiUserAuth, donorAuth, donorDonated);
+  router.post('/history', apiUserAuth, donorAuth, donorHistory);
   router.get('/search', apiUserAuth, donorSearch);
   router.delete('/delete/:id', apiUserAuth, donorDelete);
 

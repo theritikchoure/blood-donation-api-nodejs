@@ -12,6 +12,7 @@ const apiUserAuth = require('./../middleware/apiUserAuth'); // import api user j
   const patientChangePassword = require('./../controllers/patientController/patientChangePassword');
   const patientSearch = require('./../controllers/patientController/patientSearch');
   const patientDelete = require('./../controllers/patientController/patientDelete'); 
+  const patientHistory = require('./../controllers/patientController/patientHistory'); 
 // Import Different patient Controllers (End) 
 
 // patient Routes (End) 
@@ -22,6 +23,7 @@ const apiUserAuth = require('./../middleware/apiUserAuth'); // import api user j
   router.put('/profile/update', apiUserAuth, patientAuth, patientProfileUpdate);
   router.put('/profile/change-password', apiUserAuth, patientAuth, patientChangePassword);
   router.put('/donated', apiUserAuth, patientAuth, patientDonated);
+  router.post('/history', apiUserAuth, patientAuth, patientHistory);
   router.get('/search', apiUserAuth, patientSearch);
   router.delete('/delete/:id', apiUserAuth, patientDelete);
 // patient Routes (End) 

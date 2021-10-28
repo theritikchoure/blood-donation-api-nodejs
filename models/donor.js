@@ -35,7 +35,14 @@ const donorSchema = new mongoose.Schema({
     donated: {
         type: Date,
         default: null
-    }
+    },
+    donatedTo: [
+        {
+            default: null,
+            type: mongoose.Types.ObjectId,
+            ref: 'Patient'
+        }
+    ],
 })
 
 module.exports = mongoose.model('Donor', donorSchema);

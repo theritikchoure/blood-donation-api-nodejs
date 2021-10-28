@@ -1,37 +1,26 @@
 const Donor = require('../../models/donor');
-const Donated = require('../../models/donated');
+const Patient = require('../../models/patient');
 
-module.exports = (req, res, next) => {
-    const donorid = req.session.donorid;
-    const patientid = req.params.patientid;
+module.exports = async (req, res, next) => {
+    try
+    {
+        const donorid = req.session.donorid;
+        const patientid = req.params.patientid;
 
-    const date = Date.now();
+        const date = Date.now();
 
-    Donor.updateOne({_id:donorid}, {$set: {donated: date}})
-           .exec()
-           .then(result => {
-               console.log(result);
-               const donated = new Donated({
-                    donorId: donorid,
-                    patientId: patientid,
-                });
-                donated
-                    .save()
-                    .then(result => {
-                        console.log(result);
-                        res.status(201).json({
-                            message: "Congrats You have Donated Blood",
-                            cofirm: result
-                        })
-                    })
-                    .catch(err => {
-                        res.status(500).json({
-                            error: err
-                        })
-                    })
-           })
-           .catch(err => {
-            console.log(err);
-            res.status(500).json({error: err});
-           });
+        await Donor.updateMany({_id:donorid}, {$set: {donated: date}}, { $push: { donatedTo: patientid } });
+        await Patient.updateMany({_id:patientid}, { $push: { donatedBy: donorid } });
+
+        res.status(200).json({
+            success: "Congrats You have Donated Blood",
+        })
+    }
+    catch(err)
+    {
+        res.status(500).json({
+            message: "Something went wrong",
+            error: err
+        })
+    }
 }

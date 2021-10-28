@@ -6,7 +6,7 @@
 [✔] : Donor Profile Update 
 [✔] : Donor Password Change from Profile
 [✔] : Donor Blood Donated
-[7] : Donor Donated History
+[✔] : Donor Donated History
 [8] : Donor Forget Password (FIX Later)
 
 // Patients Module
@@ -15,7 +15,8 @@
 [✔] : Patient Profile After Login
 [✔] : All Donor List && Based on City and BloodGroup
 [✔] : Donor's Profile after Patient Login
-[✔] : Donor Confirm by Patien's Dashboard
+[✔] : Donor Confirm by Patient's Dashboard
+[✔] : Patients Donor History
 [6] : Comment on Donor's Profile
 [7] : Patient Forget Password (FIX Later)
 
@@ -29,6 +30,3 @@
 [✔] : API User Login
 [✔] : API User List
 [✔] : API User Delete
-
-
-
