@@ -5,7 +5,7 @@
 [✔] : Donor Profile After Login
 [✔] : Donor Profile Update 
 [✔] : Donor Password Change from Profile
-[6] : Donor Blood Donated
+[✔] : Donor Blood Donated
 [7] : Donor Donated History
 [8] : Donor Forget Password (FIX Later)
 
@@ -15,8 +15,9 @@
 [✔] : Patient Profile After Login
 [✔] : All Donor List && Based on City and BloodGroup
 [✔] : Donor's Profile after Patient Login
-[5] : Donor Confirm by Patien's Dashboard
+[✔] : Donor Confirm by Patien's Dashboard
 [6] : Comment on Donor's Profile
+[7] : Patient Forget Password (FIX Later)
 
 // Admin Module
 [1] : Patients List 
