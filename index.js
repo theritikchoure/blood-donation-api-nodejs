@@ -2,60 +2,24 @@ const express = require('express'); // import express
 const mongoose = require('mongoose'); // import mongoose
 const dotenv = require('dotenv').config();
 const db = require('./db');  // import database
-const donorRouter = require('./routes/donor');  // import donorRoutes
-const patientRouter = require('./routes/patient');  // import patientRoutes
-const apiUserRouter = require('./routes/apiUser');  // import apiUserRoutes
 var cookieParser = require("cookie-parser");
-var session = require("express-session");
 var bodyParser = require("body-parser");
-const MongoDBSession = require('connect-mongodb-session')(session);
 
-const swaggerUI =require('swagger-ui-express');
-const swaggerJsDoc =require('swagger-jsdoc');
+// Middleware Imports
+const errorMiddleware = require('./middleware/error');
 
-const options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Blood Donation API",
-            version: "1.0.0",
-            description: "Blood Donation API created by Ritik"
-        },
-        servers: 
-        [
-            {
-                url: "https://blooddonation-api-ritikchoure.mdbgo.io"
-            }
-        ],
-    },
-    // apis: ["./routes/*.js"]
-    apis: ["apidocs.js"]
-}
+// Hadnling Uncaught Exception
+process.on("uncaughtException", (err) => {
+    console.log(`Error: ${err.message}`);
+    console.log('Shutting Down the Server due to Uncaught Exception');
 
-const specs = swaggerJsDoc(options)
-
-const app = express();
-
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs))
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-const store = new MongoDBSession({
-    uri: process.env.DB_STRING,
-    collection: "mySessions"
+    process.exit(1);
 });
 
-app.use(
-    session({
-      secret: "123456cat",
-      resave: false,
-      saveUninitialized: false,
-      store: store,
-      cookie: { maxAge: 60000 },
-    })
-);
+const app = express();
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({extended:false}));
 
 // Base URL Route
 app.get('/', (req, res, next) => {
@@ -64,10 +28,24 @@ app.get('/', (req, res, next) => {
     })
 })
 
-// Donor Related Routes
-app.use('/donors', donorRouter);
-app.use('/patients', patientRouter);
-app.use('/api/user', apiUserRouter);
+// Routes Imports
+const donorRoute = require('./routes/donorRoute');
+const patientRoute = require('./routes/patientRoute');
+
+app.use('/api/v1', donorRoute);
+app.use('/api/v1', patientRoute);
+
+app.use(errorMiddleware);
 
 // Start Server
 app.listen(process.env.PORT || 3000);
+
+// Unhandled Promise Rejection
+process.on("unhandledRejection", err => {
+    console.log(`Error: ${err.message}`);
+    console.log('Shutting Down Server due to Unhandled Promise Rejection');
+
+    server.close(() => {
+        process.exit(1);
+    });
+});
