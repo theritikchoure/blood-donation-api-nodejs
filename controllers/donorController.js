@@ -1,9 +1,64 @@
 const Donor = require("../models/donor");
+const Patient = require("../models/patient");
 const ErrorHandler = require("../utils/errorhandler");
 const catchAsyncError = require("../middleware/catchAsyncError");
 const sendToken = require('../utils/jwtToken');
 const sendMail = require('../utils/sendMail');
 const crypto = require('crypto');
+
+// List of Donors
+exports.listOfDonor = catchAsyncError(async (req, res, next) => {
+    city = req.query.city;
+    bloodgroup = req.query.bloodgroup;
+
+    if(city)
+    {
+        const donors = await Donor.find({city});
+        res.status(200).json({
+            success: true,
+            donors
+        })
+    }
+    else if(bloodgroup)
+    {
+        const donors = await Donor.find({bloodgroup});
+        res.status(200).json({
+            success: true,
+            donors
+        })
+    }
+    else if(city && bloodgroup)
+    {
+        const donors = await Donor.find({city, bloodgroup});
+        res.status(200).json({
+            success: true,
+            donors
+        })
+    }
+    else
+    {
+        // console.log(req.patient.name)
+        const donors = await Donor.find();
+        res.status(200).json({
+            success: true,
+            donors
+        })
+    }
+
+    
+});
+
+// Donor Profile
+exports.donorProfile = catchAsyncError(async (req, res, next) => {
+
+    id = req.params.id;
+
+    const donor = await Donor.findById(id);
+    res.status(200).json({
+        success: true,
+        donor
+    })
+});
 
 // Register a Donor
 exports.registerDonor = catchAsyncError(async (req, res, next) => {
@@ -179,15 +234,70 @@ exports.updateDonorProfile = catchAsyncError(async (req, res, next) => {
 
 });
 
+// Donor Donated 
+exports.donorDonated = catchAsyncError(async (req, res, next) => {
+    const patientId = req.params.id;
+
+    console.log(patientId);
+
+    const patient = await Patient.findById(patientId);
+
+    if (!patient) {
+        return next(new ErrorHandler("Patient Not Found", 404));
+    }
+
+    const donated = {
+        patient: patientId,
+        name: patient.name,
+        disease: patient.disease,
+    };
+
+    const donor = await Donor.findById(req.donor.id);
+
+    if (!donor) {
+        return next(new ErrorHandler("Donor Not Found", 404));
+    }
+
+    donor.donatedTo.push(donated);
+
+    donor.donatedAt = Date.now();
+
+    await donor.save({
+        validateBeforeSave: false
+      });
+
+    res.status(200).json({
+        success: true,
+    });
+});
+
+// Donor Donation History
+exports.donatedHistory = catchAsyncError(async (req, res, next) => {
+
+    const donor = await Donor.findById(req.donor.id);
+
+    if (!donor) {
+        return next(new ErrorHandler("donor Not Found", 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        patients: donor.donatedTo,
+        numberOfDonation: donor.donatedTo.length,
+        lastDonation: donor.donatedAt
+    });
+});
+
 
 // Get All Registered Donors -- Admin
 exports.getAllRegisteredDonors = catchAsyncError(async (req, res, next) => {
+    
     const donors = await Donor.find();
 
     res.status(200).json({
         success: true,
         donors
-    })
+    });
 });
 
 // Get Single Registered Donor -- Admin
@@ -205,28 +315,8 @@ exports.getSingleRegisteredDonor = catchAsyncError(async (req, res, next) => {
     })
 });
 
-// Update Donor Role -- Admin
-exports.updateDonorRole = catchAsyncError(async (req, res, next) => {
-
-    const newDonorRole = {
-        role: req.body.role,
-    }
-
-    const donor = await Donor.findByIdAndUpdate(req.params.id, newDonorRole, {new: true, runValidators: true, useFindAndModify:false});
-
-    if (!donor) {
-        return next(new ErrorHandler("Donor Not Found", 404));
-    }
-
-    res.status(200).json({
-        success: true
-    });
-});
-
 // Delete Donor -- Admin
 exports.deleteDonor = catchAsyncError(async (req, res, next) => {
-
-    // we will remove cloudinary later
 
     const donor = await Donor.findById(req.params.id);
 
@@ -235,8 +325,9 @@ exports.deleteDonor = catchAsyncError(async (req, res, next) => {
     }
   
     await donor.remove();
+    
     res.status(200).json({
       success: true,
       message: "Donor Deleted Successfully",
     });
-  });
+});

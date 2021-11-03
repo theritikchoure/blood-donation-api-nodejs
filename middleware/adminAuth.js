@@ -1,9 +1,9 @@
 const ErrorHandler = require("../utils/errorhandler");
 const catchAsyncError = require("./catchAsyncError");
 const jwt = require('jsonwebtoken');
-const Donor = require("../models/donor");
+const Admin = require("../models/admin");
 
-exports.isDonorAuth = catchAsyncError( async(req, res, next) => {
+exports.adminAuth = catchAsyncError( async(req, res, next) => {
     const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization.split(" ")[1] || req.cookies.token;
 
     if(!token)
@@ -13,9 +13,9 @@ exports.isDonorAuth = catchAsyncError( async(req, res, next) => {
 
     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.donor = await Donor.findById(decodedData.id);
+    req.admin = await Admin.findById(decodedData.id);
 
-    if(!req.donor)
+    if(!req.admin)
     {
         return next(new ErrorHandler("Please Login First", 400))
     }

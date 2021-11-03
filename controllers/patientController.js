@@ -1,4 +1,5 @@
 const Patient = require("../models/patient");
+const Donor = require("../models/donor");
 const ErrorHandler = require("../utils/errorhandler");
 const catchAsyncError = require("../middleware/catchAsyncError");
 const sendToken = require('../utils/jwtToken');
@@ -45,10 +46,11 @@ exports.loginPatient = catchAsyncError(async (req, res, next) => {
 // Logout Patient
 exports.loggedOutPatient = catchAsyncError(async (req, res, next) => {
     
-    res.cookie("token", null, {
-        expires: new Date(Date.now()),
-        httpOnly: true,
-    })
+    const patient = await Patient.findById(req.patient.id); 
+
+    patient.token = null;
+
+    await patient.save({validateBeforeSave: false});
 
     res.status(200).json({
         success: true,
@@ -181,9 +183,104 @@ exports.updatePatientProfile = catchAsyncError(async (req, res, next) => {
 
 });
 
+// Confirm A Donor
+exports.confirmDonor = catchAsyncError(async (req, res, next) => {
+    const donorId = req.params.id;
+
+    const confirm = {
+        patient: req.patient.id,
+        name: req.patient.name,
+        disease: req.patient.disease,
+    };
+
+    const donor = await Donor.findById(donorId);
+
+    if (!donor) {
+        return next(new ErrorHandler("Donor Not Found", 404));
+    }
+
+    donor.confirmedBy.push(confirm);
+
+    await donor.save({
+        validateBeforeSave: false
+    });
+
+    res.status(200).json({
+        success: true,
+    });
+    
+});
+
+// Patient Blood Requisition History
+exports.donatedHistory = catchAsyncError(async (req, res, next) => {
+
+    patientId = req.patient.id;
+    
+    const donors = await Donor.find({ "donatedTo.patient" : patientId}, {name:1,email: 1, city: 1});
+    
+    res.status(200).json({
+        success: true,
+        donors: donors
+    });
+
+});
+
+// Patient Review Donor
+exports.reviewDonor = catchAsyncError(async (req, res, next) => {
+    const donorId = req.params.id;
+
+    const review = {
+        patient: req.patient.id,
+        name: req.patient.name,
+        comment: req.body.comment,
+    };
+    
+    // const donors = await Donor.find({ "donatedTo.patient" : patientId});
+
+    const donor = await Donor.findById(donorId);
+
+    if (!donor) {
+        return next(new ErrorHandler("Donor Not Found", 404));
+    }
+
+    const isDonated = donor.donatedTo.find(
+        (don) => don.patient.toString() === req.patient.id.toString()
+    );
+
+    if (!isDonated) {
+        return next(new ErrorHandler("You can not make review", 404));
+    }
+
+    const isReviewed = donor.reviews.find(
+        (don) => don.patient.toString() === req.patient.id.toString()
+    );
+
+    if (isReviewed) {
+        donor.reviews.forEach((rev) => {
+          if (rev.patient.toString() === req.patient.id.toString())
+            (rev.name = req.patient.name), (rev.comment = req.body.comment);
+        });
+      } else {
+        donor.reviews.push(review);
+      }
+
+    donor.reviews.push(review);
+
+    await donor.save({
+        validateBeforeSave: false
+    });
+
+    res.status(200).json({
+        success: true,
+        review,
+        numOfReviews: donor.reviews.length
+    });
+});
+
 
 // Get All Registered Patients -- Admin
 exports.getAllRegisteredPatients = catchAsyncError(async (req, res, next) => {
+
     const patients = await Patient.find();
 
     res.status(200).json({
@@ -194,6 +291,7 @@ exports.getAllRegisteredPatients = catchAsyncError(async (req, res, next) => {
 
 // Get Single Registered Patient -- Admin
 exports.getSingleRegisteredPatient = catchAsyncError(async (req, res, next) => {
+
     const patient = await Patient.findById(req.params.id);
 
     if(!patient)
@@ -205,24 +303,6 @@ exports.getSingleRegisteredPatient = catchAsyncError(async (req, res, next) => {
         success: true,
         patient
     })
-});
-
-// Update Patient Role -- Admin
-exports.updatePatientRole = catchAsyncError(async (req, res, next) => {
-
-    const newPatientRole = {
-        role: req.body.role,
-    }
-
-    const patient = await Patient.findByIdAndUpdate(req.params.id, newPatientRole, {new: true, runValidators: true, useFindAndModify:false});
-
-    if (!patient) {
-        return next(new ErrorHandler("Patient Not Found", 404));
-    }
-
-    res.status(200).json({
-        success: true
-    });
 });
 
 // Delete Patient -- Admin
@@ -241,4 +321,4 @@ exports.deletePatient = catchAsyncError(async (req, res, next) => {
       success: true,
       message: "Patient Deleted Successfully",
     });
-  });
+});

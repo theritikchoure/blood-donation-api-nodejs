@@ -9,12 +9,12 @@ var bodyParser = require("body-parser");
 const errorMiddleware = require('./middleware/error');
 
 // Hadnling Uncaught Exception
-process.on("uncaughtException", (err) => {
-    console.log(`Error: ${err.message}`);
-    console.log('Shutting Down the Server due to Uncaught Exception');
+// process.on("uncaughtException", (err) => {
+//     console.log(`Error: ${err.message}`);
+//     console.log('Shutting Down the Server due to Uncaught Exception');
 
-    process.exit(1);
-});
+//     process.exit(1);
+// });
 
 const app = express();
 app.use(express.json());
@@ -28,17 +28,23 @@ app.get('/', (req, res, next) => {
     })
 })
 
-// Routes Imports
+// // Routes Imports
 const donorRoute = require('./routes/donorRoute');
 const patientRoute = require('./routes/patientRoute');
+const adminRoute = require('./routes/adminRoute');
 
 app.use('/api/v1', donorRoute);
 app.use('/api/v1', patientRoute);
+app.use('/api/v1', adminRoute);
 
 app.use(errorMiddleware);
 
 // Start Server
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000, function(err, result){
+    if (err) console.log("Error in server setup");
+
+    console.log("Server listening on Port");
+});
 
 // Unhandled Promise Rejection
 process.on("unhandledRejection", err => {

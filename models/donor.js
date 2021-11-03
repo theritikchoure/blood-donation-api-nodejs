@@ -45,20 +45,47 @@ const donorSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please Enter Your City"],
     },
-    donated: {
+    confirmedBy: [
+        {
+            patient: {
+                default: null,
+                type: mongoose.Schema.ObjectId,
+                ref: 'Patient'
+            },
+            name: {
+                type: String,
+                required: true
+            },
+            disease: {
+                type: String,
+                required: true
+            },
+        }
+    ],
+    donatedAt: {
         type: Date,
         default: null
     },
     donatedTo: [
         {
-            default: null,
-            type: mongoose.Schema.ObjectId,
-            ref: 'Patient'
+            patient: {
+                default: null,
+                type: mongoose.Schema.ObjectId,
+                ref: 'Patient'
+            },
+            name: {
+                type: String,
+                required: true
+            },
+            disease: {
+                type: String,
+                required: true
+            },
         }
     ],
     reviews: [
         {
-            user: {
+            patient: {
                 type: mongoose.Schema.ObjectId,
                 ref: "Patient",
                 required: true,
@@ -73,6 +100,7 @@ const donorSchema = new mongoose.Schema({
             }
         }
     ],
+    token: String,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 })
