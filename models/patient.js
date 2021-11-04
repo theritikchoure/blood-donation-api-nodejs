@@ -49,7 +49,6 @@ const patientSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please Enter Your Hospital"],
     },
-    token: String,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 });

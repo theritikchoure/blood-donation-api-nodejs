@@ -100,7 +100,6 @@ const donorSchema = new mongoose.Schema({
             }
         }
     ],
-    token: String,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 })

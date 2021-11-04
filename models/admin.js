@@ -21,7 +21,6 @@ const adminSchema = new mongoose.Schema({
         minlength: [8, "Password Should Be Greater than 8 Characters"],
         select: false,
     },
-    token: String,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 })

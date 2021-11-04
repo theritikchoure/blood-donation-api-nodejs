@@ -2,19 +2,19 @@ const express = require('express'); // import express
 const mongoose = require('mongoose'); // import mongoose
 const dotenv = require('dotenv').config();
 const db = require('./db');  // import database
-var cookieParser = require("cookie-parser");
-var bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser"); // import cookieParser
+var bodyParser = require("body-parser"); 
 
 // Middleware Imports
 const errorMiddleware = require('./middleware/error');
 
 // Hadnling Uncaught Exception
-// process.on("uncaughtException", (err) => {
-//     console.log(`Error: ${err.message}`);
-//     console.log('Shutting Down the Server due to Uncaught Exception');
+process.on("uncaughtException", (err) => {
+    console.log(`Error: ${err.message}`);
+    console.log('Shutting Down the Server due to Uncaught Exception');
 
-//     process.exit(1);
-// });
+    process.exit(1);
+});
 
 const app = express();
 app.use(express.json());

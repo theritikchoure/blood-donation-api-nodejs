@@ -13,7 +13,7 @@ exports.listOfDonor = catchAsyncError(async (req, res, next) => {
 
     if(city)
     {
-        const donors = await Donor.find({city});
+        const donors = await Donor.find({city}, {name:1, mobile: 1});
         res.status(200).json({
             success: true,
             donors
@@ -21,7 +21,7 @@ exports.listOfDonor = catchAsyncError(async (req, res, next) => {
     }
     else if(bloodgroup)
     {
-        const donors = await Donor.find({bloodgroup});
+        const donors = await Donor.find({bloodgroup}, {name:1, mobile: 1});
         res.status(200).json({
             success: true,
             donors
@@ -29,7 +29,7 @@ exports.listOfDonor = catchAsyncError(async (req, res, next) => {
     }
     else if(city && bloodgroup)
     {
-        const donors = await Donor.find({city, bloodgroup});
+        const donors = await Donor.find({city, bloodgroup}, {name:1, mobile: 1});
         res.status(200).json({
             success: true,
             donors
@@ -38,7 +38,7 @@ exports.listOfDonor = catchAsyncError(async (req, res, next) => {
     else
     {
         // console.log(req.patient.name)
-        const donors = await Donor.find();
+        const donors = await Donor.find({}, {name:1, mobile: 1});
         res.status(200).json({
             success: true,
             donors
