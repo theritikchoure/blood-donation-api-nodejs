@@ -5,6 +5,7 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const sendToken = require('../utils/jwtToken');
 const sendMail = require('../utils/sendMail');
 const crypto = require('crypto');
+var csv = require('csv-express');
 
 // List of Donors
 exports.listOfDonor = catchAsyncError(async (req, res, next) => {
@@ -329,5 +330,18 @@ exports.deleteDonor = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Donor Deleted Successfully",
+    });
+});
+
+// Export Donor -- Admin
+exports.exportDonors = catchAsyncError(async (req, res, next) => {
+    var filename   = "donors.csv";
+    const donor = await Donor.find({}, {__v: 0}).lean().exec({}, function(err, donors) {
+        if (err) res.send(err);
+        
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader("Content-Disposition", 'attachment; filename='+filename);
+        res.csv(donors, true);
     });
 });

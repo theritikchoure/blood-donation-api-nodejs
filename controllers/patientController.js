@@ -322,3 +322,16 @@ exports.deletePatient = catchAsyncError(async (req, res, next) => {
       message: "Patient Deleted Successfully",
     });
 });
+
+// Export Patients -- Admin
+exports.exportPatients = catchAsyncError(async (req, res, next) => {
+    var filename   = "patients.csv";
+    const patient = await Patient.find({}, {__v: 0}).lean().exec({}, function(err, patients) {
+        if (err) res.send(err);
+        
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader("Content-Disposition", 'attachment; filename='+filename);
+        res.csv(patients, true);
+    });
+});

@@ -1,4 +1,4 @@
-const { registerPatient, loginPatient, loggedOutPatient, forgetPassword, resetPassword, getPatientDetails, updatePatientPassword, updatePatientProfile, getAllRegisteredPatients, getSingleRegisteredPatient, updatePatientRole, deletePatient, confirmDonor, donatedHistory, reviewDonor } = require('../controllers/patientController');
+const { registerPatient, loginPatient, loggedOutPatient, forgetPassword, resetPassword, getPatientDetails, updatePatientPassword, updatePatientProfile, getAllRegisteredPatients, getSingleRegisteredPatient, updatePatientRole, deletePatient, confirmDonor, donatedHistory, reviewDonor, exportPatients } = require('../controllers/patientController');
 const { isPatientAuth } = require('../middleware/patientAuth');
 const { adminAuth } = require('../middleware/adminAuth');
 const express = require('express');
@@ -23,5 +23,7 @@ router.route('/patients/review/:id').post(isPatientAuth, reviewDonor);
 router.route('/admin/patients').get(adminAuth, getAllRegisteredPatients);
 router.route('/admin/patients/:id').get(adminAuth, getSingleRegisteredPatient)
                                 .delete(adminAuth, deletePatient);
+
+router.route('/admin/export/patients').get(adminAuth, exportPatients);
 
 module.exports = router;
