@@ -1,4 +1,5 @@
 const Donor = require("../models/donor");
+const DonorLoginActivity = require("../models/donorLoginActivity");
 const Patient = require("../models/patient");
 const ErrorHandler = require("../utils/errorhandler");
 const catchAsyncError = require("../middleware/catchAsyncError");
@@ -77,23 +78,25 @@ exports.loginDonor = catchAsyncError(async (req, res, next) => {
     const { email, password } = req.body;
 
     //If donor has not given email or password 
-    if(!email || !password)
-    {
-        return next(new ErrorHandler("Please Enter Email and Password", 400))
-    }
+    if(!email || !password) { return next(new ErrorHandler("Please Enter Email and Password", 400)) }
 
     const donor = await Donor.findOne({email}).select("+password");
-
-    if(!donor)
-    {
-        return next(new ErrorHandler("Invalid Email or Password", 401))
-    }
+    if(!donor){ return next(new ErrorHandler("Invalid Email or Password", 401)) }
 
     const isPasswordMatched = await donor.comparePassword(password);
+    if (!isPasswordMatched) { return next(new ErrorHandler("Invalid email or password", 401)); }
 
-    if (!isPasswordMatched) {
-        return next(new ErrorHandler("Invalid email or password", 401));
+    if(donor.donatedAt != null) { await donor.checkAvailabilityStatus(donor); }
+
+    // Donor Login Activity
+    const loggedInDonor = {
+        donor: donor._id,
+        login_time: Date.now(),
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
     }
+    
+    await new DonorLoginActivity(loggedInDonor).save();
 
     sendToken(donor, 200, res);
 });
@@ -262,6 +265,7 @@ exports.donorDonated = catchAsyncError(async (req, res, next) => {
     donor.donatedTo.push(donated);
 
     donor.donatedAt = Date.now();
+    donor.status = "unavailable";
 
     await donor.save({
         validateBeforeSave: false
@@ -293,11 +297,12 @@ exports.donatedHistory = catchAsyncError(async (req, res, next) => {
 // Get All Registered Donors -- Admin
 exports.getAllRegisteredDonors = catchAsyncError(async (req, res, next) => {
     
-    const donors = await Donor.find();
+    const donors = await Donor.find().select('+password');
 
     res.status(200).json({
         success: true,
-        donors
+        numOfDonors: donors.length,
+        donors,
     });
 });
 
@@ -344,4 +349,37 @@ exports.exportDonors = catchAsyncError(async (req, res, next) => {
         res.setHeader("Content-Disposition", 'attachment; filename='+filename);
         res.csv(donors, true);
     });
+});
+
+// Import Donor -- Admin
+const csvtojson = require('csvtojson');
+const bcrypt = require('bcryptjs');
+exports.importDonors = catchAsyncError(async (req, res, next) => {
+        // CSV file name
+        const fileName = 'sample.csv';
+        var arrayToInsert = [];
+        csvtojson().fromFile(fileName).then(async source => {
+            // Fetching the all data from each row
+            for (var i = 0; i < source.length; i++) {
+                var oneRow = {
+                    name: source[i]['name'],
+                    bloodgroup: source[i]['bloodgroup'],
+                    email: source[i]['email'],
+                    // password: source[i]['password'],
+                    password: await bcrypt.hash(source[i]['password'],10),
+                    mobile: source[i]['mobile'],
+                    age: source[i]['age'],
+                    address: source[i]['address'],
+                    city: source[i]['city'],
+                };
+                arrayToInsert.push(oneRow);
+            }
+            //inserting into the table “employees”
+            Donor.insertMany(arrayToInsert, (err, result) => {
+                if (err) console.log(err);
+                if(result){
+                    console.log("Import CSV into database successfully.");
+                }
+            });
+        });
 });

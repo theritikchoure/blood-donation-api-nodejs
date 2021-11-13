@@ -9,12 +9,12 @@ var bodyParser = require("body-parser");
 const errorMiddleware = require('./middleware/error');
 
 // Hadnling Uncaught Exception
-process.on("uncaughtException", (err) => {
-    console.log(`Error: ${err.message}`);
-    console.log('Shutting Down the Server due to Uncaught Exception');
+// process.on("uncaughtException", (err) => {
+//     console.log(`Error: ${err.message}`);
+//     console.log('Shutting Down the Server due to Uncaught Exception');
 
-    process.exit(1);
-});
+//     process.exit(1);
+// });
 
 const app = express();
 app.use(express.json());
@@ -32,10 +32,12 @@ app.get('/', (req, res, next) => {
 const donorRoute = require('./routes/donorRoute');
 const patientRoute = require('./routes/patientRoute');
 const adminRoute = require('./routes/adminRoute');
+const bloodStockRoute = require('./routes/bloodStockRoute');
 
 app.use('/api/v1', donorRoute);
 app.use('/api/v1', patientRoute);
 app.use('/api/v1', adminRoute);
+app.use('/api/bloodstock', bloodStockRoute);
 
 app.use(errorMiddleware);
 

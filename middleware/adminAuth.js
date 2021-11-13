@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const Admin = require("../models/admin");
 
 exports.adminAuth = catchAsyncError( async(req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization.split(" ")[1] || req.cookies.token;
+
+    const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.cookies.token;
 
     if(!token)
     {

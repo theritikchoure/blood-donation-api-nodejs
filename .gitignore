@@ -3,3 +3,4 @@ Jenkinsfile
 node_modules
 db.js
 .env
+sample.csv

@@ -1,4 +1,4 @@
-const { registerDonor, loginDonor, loggedOutDonor, forgetPassword, resetPassword, getDonorDetails, updateDonorPassword, updateDonorProfile, getAllRegisteredDonors, getSingleRegisteredDonor, updateDonorRole, deleteDonor, donorDonated, donatedHistory, listOfDonor, donorProfile, exportDonors } = require('../controllers/donorController');
+const { registerDonor, loginDonor, loggedOutDonor, forgetPassword, resetPassword, getDonorDetails, updateDonorPassword, updateDonorProfile, getAllRegisteredDonors, getSingleRegisteredDonor, updateDonorRole, deleteDonor, donorDonated, donatedHistory, listOfDonor, donorProfile, exportDonors, importDonors } = require('../controllers/donorController');
 const { isDonorAuth } = require('../middleware/donorAuth');
 const { isPatientAuth } = require('../middleware/patientAuth');
 const { adminAuth } = require('../middleware/adminAuth');
@@ -22,6 +22,7 @@ router.route('/donors/profile/history').get(isDonorAuth, donatedHistory);
 
 router.route('/donors/:id').get(isPatientAuth, donorProfile);
 
+router.route('/admin/donors/import').post(importDonors);
 router.route('/admin/donors').get(adminAuth, getAllRegisteredDonors);
 router.route('/admin/donors/:id').get(adminAuth, getSingleRegisteredDonor)
                                 .delete(adminAuth, deleteDonor);

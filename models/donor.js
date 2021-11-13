@@ -62,6 +62,10 @@ const donorSchema = new mongoose.Schema({
             },
         }
     ],
+    status: {
+        type: String,
+        default: "available"
+    },
     donatedAt: {
         type: Date,
         default: null
@@ -137,6 +141,18 @@ donorSchema.methods.getResetPasswordToken = function(){
     this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
     return resetToken;
+}
+
+// Checking Donor Availability Status
+donorSchema.methods.checkAvailabilityStatus = async function(donor){
+    const nextDonationDate = new Date(donor.donatedAt.getTime() + 90 * 24 * 60 * 60 * 1000);
+    const currentDate = new Date(Date.now());
+
+    if(currentDate > nextDonationDate )
+    {
+        donor.status = "available";
+        await donor.save({validateBeforeSave:false});
+    }
 }
 
 module.exports = mongoose.model('Donor', donorSchema);
