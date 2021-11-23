@@ -5,7 +5,7 @@ const { adminAuth } = require('../middleware/adminAuth');
 const express = require('express');
 const router = express.Router();
 
-router.route('/donors').get(isPatientAuth, listOfDonor);
+router.route('/donors').get(listOfDonor);
 
 router.route('/donors/register').post(registerDonor);
 router.route('/donors/login').post(loginDonor);
