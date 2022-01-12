@@ -42,9 +42,10 @@ async function emailLogin(req, res, next) {
     req.body.ip = ip;
 
     let donorLogin = await authCtrl.emailLogin(req);
-    if(!donorLogin) return customResponse(res,201, resMsgType.SUCCESS,resMsg.LOGIN_FAILED, null);
+    if(!donorLogin) return customResponse(res,401, resMsgType.WARNING,resMsg.LOGIN_FAILED, null);
     return customResponse(res,201, resMsgType.SUCCESS,resMsg.LOGIN, donorLogin);
   }catch(e){
+    console.log(e)
     return customResponse(res,500, resMsgType.ERROR,resMsg.SWR, e.message);
   }
 }

@@ -8,37 +8,7 @@ const Joi = require('joi');
 const bcrypt = require('bcryptjs');
 const sendMail = require('../utils/sendMail');
 const { generateotp, fast2sms } = require('../utils/sendOTP');
-
-const userLoginSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
-});
-
-const loginOtpSchema = Joi.object({
-  mobile: Joi.string().required().regex(/^[1-9][0-9]{9}$/),
-});
-
-const verifyOtpSchema = Joi.object({
-  mobile: Joi.string().required().regex(/^[1-9][0-9]{9}$/),
-  otp: Joi.number().required(),
-});
-
-const forgetPasswordSchema = Joi.object({
-  email: Joi.string().required(),
-});
-
-const updateMeSchema = Joi.object({
-  name: Joi.string().required(),
-  bloodgroup: Joi.string().required(),
-  email: Joi.string().email(),
-  mobile: Joi.string().required().regex(/^[1-9][0-9]{9}$/),
-  password: Joi.string().required(),
-  repeat_password: Joi.string().required().valid(Joi.ref('password')),
-  address: Joi.string().required(),
-  city: Joi.string().required(),
-  state: Joi.string().required(),
-  zipcode: Joi.string().required().regex(/^[1-9][0-9]{5}$/),
-});
+const schema = require('../utils/validationSchema.js');
 
 module.exports = {
   emailLogin, generateOtp, verifyOTP, updateMe, logout
@@ -47,37 +17,27 @@ module.exports = {
 async function emailLogin(req) {
   const { email, password } = req.body;
   let userDetails = { email: req.body.email, password: req.body.password }
-  userDetails = await Joi.validate(userDetails, userLoginSchema, { abortEarly: true });
+  userDetails = await Joi.validate(userDetails, schema.userLoginSchema, { abortEarly: true });
 
   var user = await Donor.findOne({ email }).select('+password');
-  if(!user) 
-  var user = await Patient.findOne({email}).select('+password'); var type = "patient"
-
   if(!user) return false;
 
   
-  const isPasswordMatched = await user.comparePassword(req.body.password);
+  const isPasswordMatched = await user.comparePassword(password);
   console.log(isPasswordMatched)
   if(!isPasswordMatched) return false;
-  
-  if(user.donatedAt === null || user.donatedAt != null)
-    {
-      if(user.donatedAt != null ) await user.checkAvailabilityStatus(user);
-      loginActivityDetails = { user_id: user._id, user_type: "donor", body: req.body, status: 'success', };
-      loginActivityDetails = await loginActivity(loginActivityDetails);
-    }else{
-      loginActivityDetails = { user_id: user._id, user_type: "patient", body: req.body, status: 'success', };
-      loginActivityDetails = await loginActivity(loginActivityDetails);
-    }
 
-  token = await generateToken(donor);
+  if(user.donatedAt != null ) await user.checkAvailabilityStatus(user);
+  loginActivityDetails = { user_id: user._id, user_type: "donor", body: req.body, status: 'success', };
+  loginActivityDetails = await loginActivity(loginActivityDetails);
 
-  return { donor, token };
+  token = await generateToken(user);
 
+  return { user, token };
 }
 
 async function generateOtp(req) {
-  const validation = await Joi.validate(req.body, loginOtpSchema, { abortEarly: true });
+  const validation = await Joi.validate(req.body, schema.loginOtpSchema, { abortEarly: true });
   const { mobile } = req.body;
 
   var user = await Donor.findOne({ mobile });
@@ -104,7 +64,7 @@ async function generateOtp(req) {
 
 async function verifyOTP(req) {
   let userDetails = { mobile: req.body.mobile, otp: req.body.otp }
-  userDetails = await Joi.validate(userDetails, verifyOtpSchema, { abortEarly: true });
+  userDetails = await Joi.validate(userDetails, schema.verifyOtpSchema, { abortEarly: true });
 
   var user = await Donor.findOne({ mobile: userDetails.mobile });
   if(!user) 
@@ -161,7 +121,7 @@ async function loginActivity(req) {
 }
 
 async function updateMe(user) {
-  const validation = await Joi.validate(user.body, updateMeSchema, { abortEarly: true });
+  const validation = await Joi.validate(user.body, schema.updateMeSchema, { abortEarly: true });
   const updateMe = await User.findByIdAndUpdate(user.id, user.body, {new: true, runValidators: true, useFindAndModify:false});
   return updateMe;
 }
