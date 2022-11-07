@@ -1,7 +1,7 @@
 {
-  "name": "rabies-api",
+  "name": "bloodbuddies-api",
   "version": "1.0.0",
-  "description": "Rabies Master Admin Panel",
+  "description": "BloodBuddies Panel",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
