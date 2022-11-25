@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const Joi = require('joi');
 const Patient = require('../models/patient.model');
+const { userData } = require('../utils/data/users');
 
 const patientSchema = Joi.object({
   name: Joi.string().required(),
@@ -26,7 +27,8 @@ async function insert(req) {
 }
 
 async function getAllPatient() {
-  return await Patient.find();
+  return userData;
+  // return await Patient.find();
 }
 
 async function getSinglePatient(req) {

@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const Donor = require('../models/donor.model');
+const { userData } = require('../utils/data/users');
 
 const csvtojson = require('csvtojson');
 
@@ -28,7 +29,8 @@ async function insert(req) {
 }
 
 async function getAllDonor() {
-  return await Donor.find();
+  return userData;
+  // return await Donor.find();
 }
 
 async function getSingleDonor(req) {

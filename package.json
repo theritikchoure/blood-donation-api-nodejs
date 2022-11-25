@@ -4,8 +4,10 @@
   "description": "BloodBuddies Panel",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon -L index.js",
+    "build": "npm install",
+    "test": "mocha --exit",
+    "start": "node index.js"
   },
   "author": "Ritik@BloodBuddies",
   "license": "ISC",

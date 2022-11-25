@@ -53,6 +53,7 @@ In this project Frontend developed by Adarsh Kushwaha and Backend developed by R
 
 - [@adarsh-kushwaha](https://github.com/adarsh-kushwaha)
 - [@theritikchoure](https://github.com/theritikchoure)
+- [@Rishit605](https://github.com/Rishit605)
 
 ## Links
 
